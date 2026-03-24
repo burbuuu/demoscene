@@ -5,7 +5,7 @@
 
 class PlasmaImageEffect : public Effect {
 public:
-    PlasmaImageEffect(const std::string& imagePath1, const std::string& imagePath2);
+    PlasmaImageEffect(const std::string& imagePath1, const std::string& imagePath2, float imageWeightRatio = 0.5f);
     void init() override;
     void update(int currentTime) override;
     void render(SDL_Surface* surface) override;
@@ -14,6 +14,7 @@ public:
 private:
     std::string m_imagePath1;
     std::string m_imagePath2;
+    float m_imageWeightRatio;
     unsigned char* m_grayBuffer1;
     unsigned char* m_grayBuffer2;
     unsigned char* m_plasmaData1;

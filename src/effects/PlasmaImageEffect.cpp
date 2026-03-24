@@ -5,8 +5,8 @@
 #include <cmath>
 #include <cstdlib>
 
-PlasmaImageEffect::PlasmaImageEffect(const std::string& imagePath1, const std::string& imagePath2)
-    : m_imagePath1(imagePath1), m_imagePath2(imagePath2), 
+PlasmaImageEffect::PlasmaImageEffect(const std::string& imagePath1, const std::string& imagePath2, float imageWeightRatio)
+    : m_imagePath1(imagePath1), m_imagePath2(imagePath2), m_imageWeightRatio(imageWeightRatio),
       m_grayBuffer1(nullptr), m_grayBuffer2(nullptr),
       m_plasmaData1(nullptr), m_plasmaData2(nullptr),
       m_win1X(0), m_win1Y(0), m_win2X(0), m_win2Y(0),
@@ -41,12 +41,22 @@ unsigned char* PlasmaImageEffect::loadImageToGrayBuffer(const std::string& path)
         return dummy;
     }
 
-    SDL_Surface* scaledSurface = SDL_CreateRGBSurfaceWithFormat(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32, SDL_PIXELFORMAT_ARGB8888);
-    SDL_BlitScaled(loadedSurface, nullptr, scaledSurface, nullptr);
+    // Create a target surface with the screen resolution
+    SDL_Surface* targetSurface = SDL_CreateRGBSurfaceWithFormat(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32, SDL_PIXELFORMAT_ARGB8888);
+    // Fill with black background
+    SDL_FillRect(targetSurface, nullptr, SDL_MapRGB(targetSurface->format, 0, 0, 0));
+
+    // Calculate centering offsets
+    int offsetX = (SCREEN_WIDTH - loadedSurface->w) / 2;
+    int offsetY = (SCREEN_HEIGHT - loadedSurface->h) / 2;
+    SDL_Rect destRect = { offsetX, offsetY, loadedSurface->w, loadedSurface->h };
+
+    // Blit loadedSurface onto targetSurface without scaling
+    SDL_BlitSurface(loadedSurface, nullptr, targetSurface, &destRect);
     SDL_FreeSurface(loadedSurface);
 
     unsigned char* buffer = (unsigned char*)malloc(SCREEN_WIDTH * SCREEN_HEIGHT);
-    Uint32* pixels = (Uint32*)scaledSurface->pixels;
+    Uint32* pixels = (Uint32*)targetSurface->pixels;
     for (int i = 0; i < SCREEN_WIDTH * SCREEN_HEIGHT; ++i) {
         Uint32 pixel = pixels[i];
         Uint8 r = (pixel >> 16) & 0xFF;
@@ -55,7 +65,7 @@ unsigned char* PlasmaImageEffect::loadImageToGrayBuffer(const std::string& path)
         buffer[i] = (unsigned char)((r + g + b) / 3);
     }
 
-    SDL_FreeSurface(scaledSurface);
+    SDL_FreeSurface(targetSurface);
     return buffer;
 }
 
@@ -100,7 +110,7 @@ void PlasmaImageEffect::render(SDL_Surface* surface) {
             unsigned char g2 = m_grayBuffer2[j * SCREEN_WIDTH + i];
             
             // Blending: (plasmaIndex * g1 + (255 - plasmaIndex) * g2) / 255
-            unsigned char combinedGray = (unsigned char)((plasmaIndex * g1 + (255 - plasmaIndex) * g2) / 255);
+            unsigned char combinedGray = (unsigned char)((plasmaIndex * g1 * m_imageWeightRatio + (255 - plasmaIndex) * g2 *(1-m_imageWeightRatio)) / 255);
             
             // Apply palette using the combined grayscale value (like ImageEffect)
             int paletteIndex = (combinedGray + m_shift) % 256;

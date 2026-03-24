@@ -6,6 +6,8 @@
 #include "PlasmaEffect.h"
 #include "ImageEffect.h"
 #include "PlasmaImageEffect.h"
+#include "RotateImage.h"
+#include "LetteringEffect.h"
 #include <algorithm>
 
 Demo::Demo() :
@@ -39,7 +41,7 @@ bool Demo::init() {
     }
 
     // Create a window
-    m_window = SDL_CreateWindow("burbuu's demo", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    m_window = SDL_CreateWindow("demo", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 
     if (!m_window) {
         printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
@@ -47,6 +49,12 @@ bool Demo::init() {
     }
 
     m_screenSurface = SDL_GetWindowSurface(m_window);
+    
+#if defined(DEBUG) || !defined(NDEBUG)
+    SDL_SetWindowTitle(m_window, "burbuu's demo [DEBUG]");
+#else
+    SDL_SetWindowTitle(m_window, "burbuu's demo");
+#endif
     
     // Create auxiliary surfaces for transitions
     m_effectSurface1 = SDL_CreateRGBSurfaceWithFormat(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32, SDL_PIXELFORMAT_ARGB8888);
@@ -56,7 +64,19 @@ bool Demo::init() {
     m_effects.push_back(new PlasmaEffect());
     m_effects.push_back(new ImageEffect("../res/text4.jpg"));
     m_effects.push_back(new ImageEffect("../res/text3.jpg"));
+    m_effects.push_back(new PlasmaImageEffect("../res/text1.jpg", "../res/knifes.jpg",0.3f));
     m_effects.push_back(new PlasmaImageEffect("../res/text1.jpg", "../res/scene.jpg"));
+    m_effects.push_back(new RotateImage("../res/utenashadows.jpg", DarkCornflowerBlue, Thistle, 64));
+    m_effects.push_back(new RotateImage("../res/text2.jpg", OrchidPink, CornFlowerBlue, 16));
+    m_effects.push_back(new PlasmaImageEffect("../res/cuadrat.jpg", "../res/scene.jpg"));
+
+    // LetteringEffect on top of PlasmaEffect with custom colors
+    std::vector<std::string> letteringImages = {
+        "../res/zetaiunmei.png",
+        "../res/zetaiunmei2.png",
+        "../res/zetaiunmei3.png"
+    };
+    m_effects.push_back(new LetteringEffect(letteringImages, DarkCornflowerBlue, OrchidPink, 8, m_effects.at(4)));
 
     for (auto effect : m_effects) {
         effect->init();
@@ -66,6 +86,15 @@ bool Demo::init() {
     m_musicManager = new MusicManager();
     m_musicManager->init();
 
+
+    m_timeline.addEvent(0, 2, (int)TransitionType::AlphaBlend, 0);
+    m_timeline.addEvent(9000, 3, (int)TransitionType::AlphaBlend, 2000);
+    m_timeline.addEvent(10000, 1, (int)TransitionType::AlphaBlend, 1500);
+
+
+
+
+    /*
     // Initialize timeline
     // Start with Plasma
     m_timeline.addEvent(0, 0, (int)TransitionType::AlphaBlend, 0); 
@@ -79,6 +108,13 @@ bool Demo::init() {
     m_timeline.addEvent(45000, 1, (int)TransitionType::AlphaBlend, 1000);
     // At 25s transition to PlasmaImageEffect
     m_timeline.addEvent(50000, 3, (int)TransitionType::AlphaBlend, 1500);
+    // At 30s transition to RotateImage
+    m_timeline.addEvent(60000, 4, (int)TransitionType::AlphaBlend, 1500);
+    m_timeline.addEvent(70000, 5, (int)TransitionType::AlphaBlend, 1500);
+    // At 80s transition to Lettering (on top of Plasma)
+    m_timeline.addEvent(80000, 6, (int)TransitionType::AlphaBlend, 1500);
+    */
+
 
     return true;
 }

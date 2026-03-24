@@ -10,7 +10,6 @@ std::vector<RGBColor> PaletteBuilder::buildLinearPalette(RGBColor color1, RGBCol
 
     std::vector<RGBColor> palette;
 
-    // Allocate memory
     palette.resize(n);
 
     // Calculate the difference between the two colors

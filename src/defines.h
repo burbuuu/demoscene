@@ -38,8 +38,11 @@ struct RGBColor {
         : r(r), g(g), b(b) {}
 };
 
-// Define some colors660
+// Define some colors
 const RGBColor White{255, 255, 255};
 const RGBColor OrchidPink{252, 187, 255};
+const RGBColor ShadowOrchid{176, 131, 178};
+const RGBColor Thistle{216, 191, 216};
 const RGBColor SkyBlue{135, 206, 235};
 const RGBColor CornFlowerBlue{100, 149, 237};
+const RGBColor DarkCornflowerBlue{70, 104, 165};

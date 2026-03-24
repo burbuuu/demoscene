@@ -4,8 +4,9 @@
 #include <iostream>
 #include <algorithm>
 
-ImageEffect::ImageEffect(const std::string& imagePath) 
-    : m_imagePath(imagePath), m_grayBuffer(nullptr), m_imgWidth(0), m_imgHeight(0), m_shift(0) {}
+ImageEffect::ImageEffect(const std::string &imagePath)
+    : m_imagePath(imagePath), m_grayBuffer(nullptr), m_imgWidth(0), m_imgHeight(0), m_shift(0) {
+}
 
 void ImageEffect::init() {
     SDL_Surface* loadedSurface = IMG_Load(m_imagePath.c_str());
@@ -19,18 +20,27 @@ void ImageEffect::init() {
         return;
     }
 
-    // Always scale the image to the screen resolution
+    // Set internal image size to match screen
     m_imgWidth = SCREEN_WIDTH;
     m_imgHeight = SCREEN_HEIGHT;
-    SDL_Surface* scaledSurface = SDL_CreateRGBSurfaceWithFormat(0, m_imgWidth, m_imgHeight, 32, SDL_PIXELFORMAT_ARGB8888);
-    
-    // Scale loadedSurface into scaledSurface
-    SDL_BlitScaled(loadedSurface, nullptr, scaledSurface, nullptr);
+
+    // Create a surface with the screen resolution
+    SDL_Surface* targetSurface = SDL_CreateRGBSurfaceWithFormat(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32, SDL_PIXELFORMAT_ARGB8888);
+    // Fill with black background
+    SDL_FillRect(targetSurface, nullptr, SDL_MapRGB(targetSurface->format, 0, 0, 0));
+
+    // Calculate centering offsets
+    int offsetX = (SCREEN_WIDTH - loadedSurface->w) / 2;
+    int offsetY = (SCREEN_HEIGHT - loadedSurface->h) / 2;
+    SDL_Rect destRect = { offsetX, offsetY, loadedSurface->w, loadedSurface->h };
+
+    // Blit loadedSurface onto targetSurface without scaling
+    SDL_BlitSurface(loadedSurface, nullptr, targetSurface, &destRect);
     SDL_FreeSurface(loadedSurface);
 
     m_grayBuffer = (unsigned char*)malloc(m_imgWidth * m_imgHeight);
 
-    Uint32* pixels = (Uint32*)scaledSurface->pixels;
+    Uint32* pixels = (Uint32*)targetSurface->pixels;
     for (int i = 0; i < m_imgWidth * m_imgHeight; ++i) {
         Uint32 pixel = pixels[i];
         Uint8 r = (pixel >> 16) & 0xFF;
@@ -41,7 +51,7 @@ void ImageEffect::init() {
         m_grayBuffer[i] = (unsigned char)((r + g + b) / 3);
     }
 
-    SDL_FreeSurface(scaledSurface);
+    SDL_FreeSurface(targetSurface);
 }
 
 void ImageEffect::update(int currentTime) {
