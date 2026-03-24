@@ -16,26 +16,26 @@ else()
     pkg_check_modules(GLU REQUIRED glu)
 endif()
 
-add_executable(R1 main.cpp
-        effect.cpp
-        effect.h
-        demo.cpp
-        demo.h
-        defines.h
-        PlasmaEffect.cpp
-        PlasmaEffect.h
-        ImageEffect.cpp
-        ImageEffect.h
-        MusicManager.cpp
-        MusicManager.h
-        PaletteBuilder.cpp
-        PaletteBuilder.h
-        Timeline.cpp
-        Timeline.h
-        TransitionManager.cpp
-        TransitionManager.h
-        PlasmaImageEffect.cpp
-        PlasmaImageEffect.h)
+add_executable(R1 src/main.cpp
+        src/effect.cpp
+        src/effect.h
+        src/demo.cpp
+        src/demo.h
+        src/defines.h
+        src/effects/PlasmaEffect.cpp
+        src/effects/PlasmaEffect.h
+        src/effects/ImageEffect.cpp
+        src/effects/ImageEffect.h
+        src/MusicManager.cpp
+        src/MusicManager.h
+        src/PaletteBuilder.cpp
+        src/PaletteBuilder.h
+        src/Timeline.cpp
+        src/Timeline.h
+        src/TransitionManager.cpp
+        src/TransitionManager.h
+        src/effects/PlasmaImageEffect.cpp
+        src/effects/PlasmaImageEffect.h)
 
 # Link SDL2_mixer here
 target_link_libraries(R1 PRIVATE
@@ -46,4 +46,4 @@ target_link_libraries(R1 PRIVATE
         ${GLU_LIBRARIES}
 )
 
-target_include_directories(R1 PRIVATE ${SDL2_INCLUDE_DIRS} ${GLU_INCLUDE_DIRS})
+target_include_directories(R1 PRIVATE ${SDL2_INCLUDE_DIRS} ${GLU_INCLUDE_DIRS} src/ src/effects/)
