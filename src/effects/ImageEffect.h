@@ -16,6 +16,7 @@ private:
     int m_imgWidth;
     int m_imgHeight;
     int m_shift;
+    std::vector<RGBColor> m_basePalette;
 
     void buildPalette(int currentTime);
 };

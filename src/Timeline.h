@@ -5,7 +5,7 @@
 struct DemoEvent {
     int startTime;        // In milliseconds
     int effectIndex;      // Index of the effect in the Demo's effect list
-    int transitionType;   // 0: Alpha, 1: Diagonal Cortinilla 1, 2: Diagonal Cortinilla 2
+    int transitionType;   // 0: Alpha, 1: Diagonal Cortinilla 1, 2: Diagonal Cortinilla 2, 3: Ellipse
     int transitionDuration; // In milliseconds
 };
 

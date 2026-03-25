@@ -30,6 +30,16 @@ void PlasmaImageEffect::init() {
             dst++;
         }
     }
+
+    // Palette similar to ImageEffect
+    auto pal1 = PaletteBuilder::buildLinearPalette(White, SkyBlue, 85);
+    auto pal2 = PaletteBuilder::buildLinearPalette(SkyBlue, OrchidPink, 85);
+    auto pal3 = PaletteBuilder::buildLinearPalette(OrchidPink, White, 86);
+
+    m_basePalette.clear();
+    m_basePalette.insert(m_basePalette.end(), pal1.begin(), pal1.end());
+    m_basePalette.insert(m_basePalette.end(), pal2.begin(), pal2.end());
+    m_basePalette.insert(m_basePalette.end(), pal3.begin(), pal3.end());
 }
 
 unsigned char* PlasmaImageEffect::loadImageToGrayBuffer(const std::string& path) {
@@ -136,17 +146,7 @@ void PlasmaImageEffect::close() {
 }
 
 void PlasmaImageEffect::buildPalette(int currentTime) {
-    // Palette similar to ImageEffect
-    auto pal1 = PaletteBuilder::buildLinearPalette(White, SkyBlue, 85);
-    auto pal2 = PaletteBuilder::buildLinearPalette(SkyBlue, OrchidPink, 85);
-    auto pal3 = PaletteBuilder::buildLinearPalette(OrchidPink, White, 86);
-
-    std::vector<RGBColor> combined;
-    combined.insert(combined.end(), pal1.begin(), pal1.end());
-    combined.insert(combined.end(), pal2.begin(), pal2.end());
-    combined.insert(combined.end(), pal3.begin(), pal3.end());
-
     for (int i = 0; i < 256; i++) {
-        m_palette[i] = combined[i % 256];
+        m_palette[i] = m_basePalette[i % 256];
     }
 }

@@ -24,6 +24,7 @@ private:
     int m_win2X, m_win2Y;
     long m_src1, m_src2;
     int m_shift;
+    std::vector<RGBColor> m_basePalette;
 
     void buildPalette(int currentTime);
     unsigned char* loadImageToGrayBuffer(const std::string& path);

@@ -20,5 +20,6 @@ private:
     int m_win1X, m_win1Y;
     int m_win2X, m_win2Y;
     long m_src1, m_src2;
+    std::vector<RGBColor> m_basePalette;
     void buildPalette(int currentTime);
 };

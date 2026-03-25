@@ -153,7 +153,7 @@ void LetteringEffect::render(SDL_Surface* surface) {
         
         SDL_Rect destRect = { (int)item.x, (int)item.y, destW, destH };
         
-        // Use SDL_BlitScaled for scaling and it handles alpha if the surface has it
+        // Use SDL_BlitScaled for scaling
         SDL_BlitScaled(img, nullptr, surface, &destRect);
     }
 }

@@ -34,7 +34,7 @@ void ImageEffect::init() {
     int offsetY = (SCREEN_HEIGHT - loadedSurface->h) / 2;
     SDL_Rect destRect = { offsetX, offsetY, loadedSurface->w, loadedSurface->h };
 
-    // Blit loadedSurface onto targetSurface without scaling
+    // Blit loadedSurface onto targetSurface
     SDL_BlitSurface(loadedSurface, nullptr, targetSurface, &destRect);
     SDL_FreeSurface(loadedSurface);
 
@@ -47,11 +47,21 @@ void ImageEffect::init() {
         Uint8 g = (pixel >> 8) & 0xFF;
         Uint8 b = pixel & 0xFF;
         
-        // Simple grayscale conversion: (R+G+B)/3
+        // Grayscale conversion: (R+G+B)/3
         m_grayBuffer[i] = (unsigned char)((r + g + b) / 3);
     }
 
     SDL_FreeSurface(targetSurface);
+
+    // 3 base palettes
+    auto pal1 = PaletteBuilder::buildLinearPalette(White, CornFlowerBlue, 85);
+    auto pal2 = PaletteBuilder::buildLinearPalette(CornFlowerBlue, OrchidPink, 85);
+    auto pal3 = PaletteBuilder::buildLinearPalette(OrchidPink, White, 86);
+
+    m_basePalette.clear();
+    m_basePalette.insert(m_basePalette.end(), pal1.begin(), pal1.end());
+    m_basePalette.insert(m_basePalette.end(), pal2.begin(), pal2.end());
+    m_basePalette.insert(m_basePalette.end(), pal3.begin(), pal3.end());
 }
 
 void ImageEffect::update(int currentTime) {
@@ -85,17 +95,7 @@ void ImageEffect::close() {
 }
 
 void ImageEffect::buildPalette(int currentTime) {
-    // Reusing the plasma style palette logic
-    auto pal1 = PaletteBuilder::buildLinearPalette(White, CornFlowerBlue, 85);
-    auto pal2 = PaletteBuilder::buildLinearPalette(CornFlowerBlue, OrchidPink, 85);
-    auto pal3 = PaletteBuilder::buildLinearPalette(OrchidPink, White, 86);
-
-    std::vector<RGBColor> combined;
-    combined.insert(combined.end(), pal1.begin(), pal1.end());
-    combined.insert(combined.end(), pal2.begin(), pal2.end());
-    combined.insert(combined.end(), pal3.begin(), pal3.end());
-
     for (int i = 0; i < 256; i++) {
-        m_palette[i] = combined[i % 256];
+        m_palette[i] = m_basePalette[i % 256];
     }
 }

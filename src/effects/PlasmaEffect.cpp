@@ -28,6 +28,17 @@ void PlasmaEffect::init() {
             dst++;
         }
     }
+
+    // 3 base palettes
+    auto pal1 = PaletteBuilder::buildLinearPalette(White, SkyBlue, 85);
+    auto pal2 = PaletteBuilder::buildLinearPalette(SkyBlue, OrchidPink, 85);
+    auto pal3 = PaletteBuilder::buildLinearPalette(OrchidPink, White, 86); // Total 256
+
+    // Combine them
+    m_basePalette.clear();
+    m_basePalette.insert(m_basePalette.end(), pal1.begin(), pal1.end());
+    m_basePalette.insert(m_basePalette.end(), pal2.begin(), pal2.end());
+    m_basePalette.insert(m_basePalette.end(), pal3.begin(), pal3.end());
 }
 
 void PlasmaEffect::update(int currentTime) {
@@ -83,22 +94,10 @@ void PlasmaEffect::close() {
 }
 
 void PlasmaEffect::buildPalette(int currentTime) {
-    // 3 base palettes
-    auto pal1 = PaletteBuilder::buildLinearPalette(White, SkyBlue, 85);
-    auto pal2 = PaletteBuilder::buildLinearPalette(SkyBlue, OrchidPink, 85);
-    auto pal3 = PaletteBuilder::buildLinearPalette(OrchidPink, White, 86); // Total 256
-
-    // Combine them
-    std::vector<RGBColor> combined;
-    combined.insert(combined.end(), pal1.begin(), pal1.end());
-    combined.insert(combined.end(), pal2.begin(), pal2.end());
-    combined.insert(combined.end(), pal3.begin(), pal3.end());
-
     // Shift the colors by one step in some direction every frame
-    // We can use currentTime to determine the shift
     int shift = (currentTime / (1000 / FPS)) % 256;
 
     for (int i = 0; i < 256; i++) {
-        m_palette[i] = combined[(i + shift) % 256];
+        m_palette[i] = m_basePalette[(i + shift) % 256];
     }
 }
