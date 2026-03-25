@@ -88,8 +88,9 @@ bool Demo::init() {
 
 
     m_timeline.addEvent(0, 2, (int)TransitionType::AlphaBlend, 0);
-    m_timeline.addEvent(9000, 3, (int)TransitionType::AlphaBlend, 2000);
-    m_timeline.addEvent(10000, 1, (int)TransitionType::AlphaBlend, 1500);
+    m_timeline.addEvent(9500, 3, (int)TransitionType::AlphaBlend, 1000);
+    m_timeline.addEvent(15000, 1, (int)TransitionType::DiagonalCortinilla1, 300);
+    m_timeline.addEvent(22000, 5, (int)TransitionType::DiffuseEllipse, 15000);
 
 
 
